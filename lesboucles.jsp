@@ -59,7 +59,7 @@
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
  <%-- Boucle for pour afficher un triangle d'étoiles --%>
   <p>
-    <% for (int J = 1; J >= cpt; J--) { %>
+    <% for (int J = 1; J <= cpt; J--) { %>
       <% for (int K = 1; K <= J; K++) { %>
          <%= "*" %>
       <% } %>

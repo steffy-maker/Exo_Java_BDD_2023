@@ -104,10 +104,10 @@
 <p>Ecrire le code afin de produire un losange</p>
   <% for (int j = 1; j <= cpt; j++) { %>
           <% for (int h = 1; h <= j; h++) { %>
-           <%= "*" %>
+            <%= "&nbsp&nbsp" %>
         <% } %>
           <% for (int k = 1; k <= (cpt-j); k++) { %>
-           <%= "&nbsp&nbsp" %>
+            <%= "*" %>
         <% } %>
         </br>
     <% } %>  

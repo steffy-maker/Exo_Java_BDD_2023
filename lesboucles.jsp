@@ -111,17 +111,13 @@
           <% } %>
         </br> 
 <% } %> 
- </p>
-<% for (int j = 1; j <= cpt; j++) { %>
-        <% for (int h = 1; h <= j; h++) { %>
-           <%= "*" %>
-        <% } %>
-        <% for (int k = 1; k <= (cpt-j); k++) { %>
-           <%= "&nbsp&nbsp" %>
-        <% } %>
-        </br>
- <% } %>  
-    
+ <p>
+    <% for (int J = 0; J < cpt; J++) { %>
+      <% for (int K = 1; K <= cpt-J; K++) { %>
+         <%= "*" %>
+      <% } %>
+      <br> 
+    <% } %>  
     </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**</br>&nbsp;&nbsp;&nbsp;&nbsp;***</br>&nbsp;&nbsp;****</br>*****</p>

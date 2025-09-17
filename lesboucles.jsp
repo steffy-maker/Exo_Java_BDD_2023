@@ -128,6 +128,10 @@
 
 <h2>Exercice 7 : La table de multiplication</h2>
 <p>Ecrire le code afin de créser une table de multiplication</p>
+ <% for(int j = 1; j <= cpt; j++) { %>
+    <%= cpt %> x <%= "j" %> = <%= cpt*j %></b>
+<% } %>  
+    </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
 <p>5 x 1 = 5</p>
 <p>5 x 2 = 10</p>

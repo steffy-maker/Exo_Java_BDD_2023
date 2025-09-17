@@ -104,23 +104,23 @@
 <p>Ecrire le code afin de produire un losange</p>
 <% for (int j = 1; j <= cpt; j++) { %>
           <% for (int k = 1; k <= (cpt-j); k++) { %>
-           <%= "&nbsp&nbsp" %>
-        <% } %>
-        <% for (int h = 1; h <= cpt; h++) { %>
+            <%= "&nbsp&nbsp" %>
+          <% } %>
+          <% for (int h = 1; h <= j; h++) { %>
+            <%= "*" %>
+          <% } %>
+        </br> 
+<% } %> 
+ </p>
+<% for (int j = 1; j <= cpt; j++) { %>
+        <% for (int h = 1; h <= j; h++) { %>
            <%= "*" %>
         <% } %>
-        </br>
-    <% } %>  
-    </p>
- <% for (int h = 1; h <= cpt; h++) { %>
-           <%= "*" %>
-        <% } %>
-  <% for (int j = 1; j <= cpt; j++) { %>
-          <% for (int k = 1; k <= (cpt-j); k++) { %>
+        <% for (int k = 1; k <= (cpt-j); k++) { %>
            <%= "&nbsp&nbsp" %>
         <% } %>
         </br>
-    <% } %>  
+ <% } %>  
     
     </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>

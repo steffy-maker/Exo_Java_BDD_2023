@@ -27,7 +27,6 @@
 
 <h2>Exercice 1 : Le carré d'étoiles</h2>
 <p>Ecrire le code afin de produire un carré d'étoile</p>
-<p>Exemple si l'utilisateur saisie le valeur 5</p>
  <%-- Boucle for pour afficher une ligne d'étoiles --%>
     
     <p>
@@ -40,8 +39,19 @@
     </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
 
+<p>Exemple si l'utilisateur saisie le valeur 5</p>
+
 <h2>Exercice 2 : Triangle rectangle gauche</h2>
 <p>Ecrire le code afin de produire un triangle rectangle aligné sur la gauche</p>
+<%-- Boucle for pour afficher un triangle d'étoiles --%>
+  <p>
+    <% for (int J = 1; J <= cpt; J++) { %>
+      <% for (int K = 1; K <= J; K++) { %>
+         <%= "*" %>
+      <% } %>
+      <br> 
+    <% } %>  
+    </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
  <%-- Boucle for pour afficher un triangle d'étoiles --%>
   <p>

@@ -40,7 +40,6 @@
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
 <p>*****</br>*****</br>*****</br>*****</br>*****</p>
 
-<p>Exemple si l'utilisateur saisie le valeur 5</p>
 
 <h2>Exercice 2 : Triangle rectangle gauche</h2>
 <p>Ecrire le code afin de produire un triangle rectangle aligné sur la gauche</p>
@@ -54,15 +53,7 @@
     <% } %>  
     </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
- <%-- Boucle for pour afficher un triangle d'étoiles --%>
-  <p>
-    <% for (int J = 1; J <= cpt; J++) { %>
-      <% for (int K = 1; K <= J; K++) { %>
-         <%= "*" %>
-      <% } %>
-      <br> 
-    <% } %>  
-    </p>
+ <p>*</br>**</br>***</br>****</br>*****</p>
 
 
 <h2>Exercice 3 : Triangle rectangle inversé</h2>
@@ -77,7 +68,7 @@
     <% } %>  
     </p>
 <p>Exemple si l'utilisateur saisie le valeur 5</p>
-
+<p>*****</br>****</br>***</br>**</br>*</p>
 
 <h2>Exercice 4 : Triangle rectangle 2</h2>
 <p>Ecrire le code afin de produire un triangle rectangle aligné sur la droite</p>

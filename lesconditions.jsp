@@ -46,40 +46,69 @@ Oui C est compris entre A et B</p>
     <p><input type="submit" value="Afficher"></p>
 </form>
 
-<%-- Récupération des valeurs A, B et C --%>
-    <% String valeurA = request.getParameter("valeur1"); %>
-    <% String valeurB = request.getParameter("valeur2"); %>
-    <% String valeurC = request.getParameter("valeur3"); %> <%-- Nouvelle valeur C --%>
+<%-- Récupération de la valeur de C --%>
+    <% String valeur3 = request.getParameter("valeur3"); %> <%-- Nouvelle valeur C --%>
 
     <%-- Vérification des conditions --%>
     <% 
         // On vérifie que les trois valeurs ont été saisies pour l'Exercice 1
-        if (valeurA != null && valeurB != null && valeurC != null && 
-            !valeurA.isEmpty() && !valeurB.isEmpty() && !valeurC.isEmpty()) { 
+        if (valeur1 != null && valeur2 != null && valeur3 != null && 
+            !valeur1.isEmpty() && !valeur2.isEmpty() && !valeur3.isEmpty()) { 
     %>
-         
+        try {
             
               <% -- Conversion des valeurs en entiers pour la comparaison %>
-                  <% int intA = Integer.parseInt(valeurA); %>
-                  <% int intB = Integer.parseInt(valeurB); %>
-                  <% int intC = Integer.parseInt(valeurC); %>
-
-                  <% -- Comparaison A vs B -- %>
-               
-                <% if (intA > intB) { %>
-                    <p>Valeur A est supérieure à Valeur B.</p>
-                <% } else if (intA < intB) { %>
-                    <p>Valeur A est inférieure à Valeur B.</p>
-                <% } else { %>
-                    <p>Valeur A est égale à Valeur B.</p>
-                <% } %>
-                
-                <hr>
-
-
+                   int intA = Integer.parseInt(valeurA); 
+                   int intB = Integer.parseInt(valeurB); 
+                   int intC = Integer.parseInt(valeurC); 
+ <%  --Détermination de la borne minimale (minVal) et maximale (maxVal) entre A et B --%>
+             int minVal = Math.min(intA, intB);
+             int maxVal = Math.max(intA, intB);
+         %>   
+             <h2>Résultat de l'exercice 1 :</h2>
+    <p>
+    <% if (c >= min && c <= max) { %>
+        Oui, C (= <%= c %>) est compris entre A (= <%= a %>) et B (= <%= b %>).
+    <% } else { %>
+        Non, C (= <%= c %>) n'est pas compris entre A (= <%= a %>) et B (= <%= b %>).
+    <% } %>
+    </p>
+<%
+    } catch (NumberFormatException e) {
+%>
+    <p style="color:red;">Erreur : veuillez saisir uniquement des chiffres valides.</p>
+<%
+    }
+} 
+%>
 <h2>Exercice 2 : Pair ou Impair ?</h2>
 <p>Écrivez un programme pour vérifier si un nombre est pair ou impair en utilisant une structure if</p>
+<form action="#" method="post">
+    <p>Saisir un nombre : <input type="text" name="nombre"></p>
+    <p><input type="submit" value="Vérifier"></p>
+</form>
 
+<%
+    String nombreStr = request.getParameter("nombre");
+    if (nombreStr != null && !nombreStr.isEmpty()) {
+        try {
+            int nombre = Integer.parseInt(nombreStr);
+            if (nombre % 2 == 0) {
+%>
+                <p>Le nombre <%= nombre %> est <strong>pair</strong>.</p>
+<%
+            } else {
+%>
+                <p>Le nombre <%= nombre %> est <strong>impair</strong>.</p>
+<%
+            }
+        } catch (NumberFormatException e) {
+%>
+            <p style="color:red;">Veuillez saisir un nombre valide.</p>
+<%
+        }
+    }
+%>
 <% } %>
 <p><a href="index.html">Retour au sommaire</a></p>
 </body>

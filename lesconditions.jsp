@@ -40,7 +40,7 @@ C = 15</br>
 Oui C est compris entre A et B</p>
 
 <form action="#" method="post">
-        <p>Saisir la valeur A : <input type="text" name="valeur1"></p>
+    <p>Saisir la valeur A : <input type="text" name="valeur1"></p>
     <p>Saisir la valeur B : <input type="text" name="valeur2"></p>
     <p>Saisir la valeur C : <input type="text" name="valeur3"></p>
     <p><input type="submit" value="Afficher"></p>
@@ -57,15 +57,15 @@ Oui C est compris entre A et B</p>
         if (valeurA != null && valeurB != null && valeurC != null && 
             !valeurA.isEmpty() && !valeurB.isEmpty() && !valeurC.isEmpty()) { 
     %>
-        <% 
-            try {
-                // Conversion des valeurs en entiers 
-                int intA = Integer.parseInt(valeurA); 
-                int intB = Integer.parseInt(valeurB); 
-                int intC = Integer.parseInt(valeurC); 
+         
+            
+              <% -- Conversion des valeurs en entiers pour la comparaison %>
+                  <% int intA = Integer.parseInt(valeurA); %>
+                  <% int intB = Integer.parseInt(valeurB); %>
+                  <% int intC = Integer.parseInt(valeurC); %>
 
-                // --- Partie 1 : Comparaison A vs B (VOTRE CODE INITIAL) ---
-                out.println("<h2>Résultat de la comparaison A et B</h2>");
+                  <% -- Comparaison A vs B -- %>
+               
                 <% if (intA > intB) { %>
                     <p>Valeur A est supérieure à Valeur B.</p>
                 <% } else if (intA < intB) { %>

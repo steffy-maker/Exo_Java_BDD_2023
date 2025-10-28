@@ -39,6 +39,44 @@ B = 20</br>
 C = 15</br>
 Oui C est compris entre A et B</p>
 
+<form action="#" method="post">
+        <p>Saisir la valeur A : <input type="text" name="valeur1"></p>
+    <p>Saisir la valeur B : <input type="text" name="valeur2"></p>
+    <p>Saisir la valeur C : <input type="text" name="valeur3"></p>
+    <p><input type="submit" value="Afficher"></p>
+</form>
+
+<%-- Récupération des valeurs A, B et C --%>
+    <% String valeurA = request.getParameter("valeur1"); %>
+    <% String valeurB = request.getParameter("valeur2"); %>
+    <% String valeurC = request.getParameter("valeur3"); %> <%-- Nouvelle valeur C --%>
+
+    <%-- Vérification des conditions --%>
+    <% 
+        // On vérifie que les trois valeurs ont été saisies pour l'Exercice 1
+        if (valeurA != null && valeurB != null && valeurC != null && 
+            !valeurA.isEmpty() && !valeurB.isEmpty() && !valeurC.isEmpty()) { 
+    %>
+        <% 
+            try {
+                // Conversion des valeurs en entiers 
+                int intA = Integer.parseInt(valeurA); 
+                int intB = Integer.parseInt(valeurB); 
+                int intC = Integer.parseInt(valeurC); 
+
+                // --- Partie 1 : Comparaison A vs B (VOTRE CODE INITIAL) ---
+                out.println("<h2>Résultat de la comparaison A et B</h2>");
+                <% if (intA > intB) { %>
+                    <p>Valeur A est supérieure à Valeur B.</p>
+                <% } else if (intA < intB) { %>
+                    <p>Valeur A est inférieure à Valeur B.</p>
+                <% } else { %>
+                    <p>Valeur A est égale à Valeur B.</p>
+                <% } %>
+                
+                <hr>
+
+
 <h2>Exercice 2 : Pair ou Impair ?</h2>
 <p>Écrivez un programme pour vérifier si un nombre est pair ou impair en utilisant une structure if</p>
 

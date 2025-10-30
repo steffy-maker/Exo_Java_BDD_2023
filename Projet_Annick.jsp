@@ -1,217 +1,178 @@
-<%-- ====================================================================== --%>
-<%-- PAGE JSP UNIQUE : Projet_Annick.jsp --%>
-<%-- ====================================================================== --%>
+<%@ page import="java.util.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<%-- Imports : On dit à JSP quels "outils" Java on veut utiliser --%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.ArrayList"%> <%-- Outil pour créer notre "liste" de tâches --%>
-<%@page import="java.util.Iterator"%> <%-- Outil nécessaire pour SUPPRIMER un élément d'une liste --%>
-<%@page import="java.io.Serializable"%> <%-- Une "bonne pratique" pour les objets qu'on met en session --%>
-
-
-
-    
-    public class Task implements Serializable {
-
-        // --- Attributs Privés ---
+<%
+    // ===== Classe simple pour représenter une tâche =====
+    class Task {
         private String titre;
         private String description;
-        private String dateEcheance;
+        private String date;
         private boolean terminee;
-        
-       
 
-        
-        public Task(String titre, String description, String dateEcheance) {
+        public Task(String titre, String description, String date) {
             this.titre = titre;
             this.description = description;
-            this.dateEcheance = dateEcheance;
-            this.terminee = false; 
+            this.date = date;
+            this.terminee = false;
         }
 
-        
-        public String getTitre() { return this.titre; }
-        public String getDescription() { return this.description; }
-        public String getDateEcheance() { return this.dateEcheance; }
-        public boolean isTerminee() { return this.terminee; }
-        public long getId() { return this.id; }
-
-       
-        public void setTerminee(boolean status) {
-            this.terminee = status;
-        }
-    }
-%>
-
-
-<%-- ====================================================================== --%>
-<%-- SECTION 2 : LOGIQUE DE LA PAGE  --%>
-<%-- ====================================================================== --%>
-<%
-   
-    if (maListeDeTaches == null) {
-        
-        maListeDeTaches = new ArrayList<Task>();
-        
-        session.setAttribute("listeTaches", maListeDeTaches);
+        public String getTitre() { return titre; }
+        public String getDescription() { return description; }
+        public String getDate() { return date; }
+        public boolean isTerminee() { return terminee; }
+        public void setTerminee(boolean t) { terminee = t; }
     }
 
-    
-    
+    // ===== Liste des tâches stockée dans la session =====
+    ArrayList<Task> taches = (ArrayList<Task>) session.getAttribute("taches");
+    if (taches == null) {
+        taches = new ArrayList<>();
+        session.setAttribute("taches", taches);
+    }
+
+    // ===== Récupération de l'action =====
     String action = request.getParameter("action");
-    String messageUtilisateur = ""; // Pour afficher un message de succès
 
-    if (action != null) {
-
-        
-        if (action.equals("ajouter")) {
-            String titreForm = request.getParameter("titre");
-            String descForm = request.getParameter("description");
-            String dateForm = request.getParameter("dateEcheance");
-            
-            Task nouvelleTache = new Task(titreForm, descForm, dateForm);
-            maListeDeTaches.add(nouvelleTache);
-            messageUtilisateur = "Tâche '" + titreForm + "' ajoutée !";
+    // ===== Ajouter une tâche =====
+    if ("ajouter".equals(action)) {
+        String titre = request.getParameter("titre");
+        String desc = request.getParameter("description");
+        String date = request.getParameter("date");
+        if (titre != null && !titre.isEmpty()) {
+            taches.add(new Task(titre, desc, date));
         }
+    }
 
-        // CAS 2: L'utilisateur a cliqué sur le lien "Supprimer"
-        else if (action.equals("supprimer")) {
-            long idTacheASupprimer = Long.parseLong(request.getParameter("id"));
-            
-            // On utilise un "Iterator" : c'est la seule façon sûre
-            // de supprimer un élément d'une liste PENDANT qu'on la parcourt.
-            Iterator<Task> iter = maListeDeTaches.iterator();
-            while (iter.hasNext()) {
-                Task tache = iter.next();
-                if (tache.getId() == idTacheASupprimer) {
-                    iter.remove();
-                    messageUtilisateur = "Tâche supprimée.";
-                    break; 
-                }
-            }
+    // ===== Supprimer une tâche =====
+    if ("supprimer".equals(action)) {
+        int index = Integer.parseInt(request.getParameter("index"));
+        if (index >= 0 && index < taches.size()) {
+            taches.remove(index);
         }
+    }
 
-        // CAS 3: L'utilisateur a cliqué sur le lien "Terminer"
-        else if (action.equals("terminer")) {
-            long idTacheATerminer = Long.parseLong(request.getParameter("id"));
-            
-            for (Task tache : maListeDeTaches) { 
-                if (tache.getId() == idTacheATerminer) {
-                    tache.setTerminee(true); 
-                    messageUtilisateur = "Tâche marquée comme terminée.";
-                    break; 
-                }
-            }
+    // ===== Marquer une tâche comme terminée =====
+    if ("terminer".equals(action)) {
+        int index = Integer.parseInt(request.getParameter("index"));
+        if (index >= 0 && index < taches.size()) {
+            taches.get(index).setTerminee(true);
         }
     }
 %>
 
-
-<%-- ====================================================================== --%>
-<%-- SECTION 3 : L'"Affichage" (Code HTML que voit l'utilisateur) --%>
-<%-- ====================================================================== --%>
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <title>Gestionnaire de Tâches (Projet Annick)</title>
+    <meta charset="UTF-8">
+    <title>Projet_Annick - Mini Gestionnaire de Tâches</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        h1, h2 { color: #444; }
-        form { background: #f4f4f4; padding: 20px; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f0f0f0; }
-        .message { color: green; font-weight: bold; }
-        .task-done { text-decoration: line-through; color: #999; }
+        body {
+            font-family: Arial;
+            background-color: #f7f9fc;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 6px;
+            margin: 4px 0;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            margin-right: 8px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Mon Gestionnaire de Tâches</h1>
+    <h1>Projet_Annick - Mini Gestionnaire de Tâches</h1>
 
-    <%-- On affiche le message de succès (s'il n'est pas vide) --%>
-    <% if (!messageUtilisateur.isEmpty()) { %>
-        <p class="message"><%= messageUtilisateur %></p>
-    <% } %>
-
-    <hr>
-
-    <h2>Ajouter une nouvelle tâche</h2>
-    
-    <form action="Projet_Annick.jsp" method="POST">
-        
+    <!-- ===== Formulaire pour ajouter une tâche ===== -->
+    <form method="post">
         <input type="hidden" name="action" value="ajouter">
-        
-        <div>
-            Titre: <br>
-            <input type="text" name="titre" required>
-        </div>
-        <div>
-            Description: <br>
-            <textarea name="description"></textarea>
-        </div>
-        <div>
-            Date d'échéance: <br>
-            <input type="date" name="dateEcheance">
-        </div>
-        <div>
-            <input type="submit" value="Ajouter la tâche">
-        </div>
+        <p><b>Titre :</b><br><input type="text" name="titre" required></p>
+        <p><b>Description :</b><br><input type="text" name="description"></p>
+        <p><b>Date d’échéance :</b><br><input type="date" name="date"></p>
+        <p><input type="submit" value="Ajouter la tâche"></p>
     </form>
 
-    <hr>
-
-    <h2>Liste de mes tâches</h2>
-
+    <!-- ===== Liste des tâches ===== -->
+    <h2>Liste des tâches</h2>
     <table>
-        <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>État</th>
+            <th>Actions</th>
+        </tr>
+
+        <% if (taches.isEmpty()) { %>
             <tr>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Échéance</th>
-                <th>Statut</th>
-                <th>Actions</th>
+                <td colspan="5" style="text-align:center;">Aucune tâche enregistrée</td>
             </tr>
-        </thead>
-        <tbody>
-            
-            <%-- On vérifie d'abord si la liste est vide --%>
-            <% if (maListeDeTaches.isEmpty()) { %>
-                <tr>
-                    <td colspan="5">Aucune tâche pour le moment.</td>
-                </tr>
-            <% } else { %>
-            
-                <%-- Boucle "for" pour parcourir 'maListeDeTaches' --%>
-                <% for (Task tache : maListeDeTaches) { %>
-                
-                    <tr <% if (tache.isTerminee()) { out.print("class='task-done'"); } %>>
-                        
-                        <%-- On utilise <%= ... %> pour AFFICHER les infos --%>
-                        <td><%= tache.getTitre() %></td>
-                        <td><%= tache.getDescription() %></td>
-                        <td><%= tache.getDateEcheance() %></td>
-                        <td>
-                            <%= tache.isTerminee() ? "Terminée" : "En cours" %>
-                        </td>
-                        <td>
-                            <%-- Le lien "Terminer" s'affiche seulement si la tâche est "En cours" --%>
-                            <% if (!tache.isTerminee()) { %>
-                                <a href="Projet_Annick.jsp?action=terminer&id=<%= tache.getId() %>">
-                                    Terminer
-                                </a>
-                            <% } %>
-                            
-                            <a href="Projet_Annick.jsp?action=supprimer&id=<%= tache.getId() %>">
-                                Supprimer
-                            </a>
-                        </td>
-                    </tr>
-                
-                <% } // Fin de la boucle "for" %>
-            <% } // Fin du "else" %>
-            
-        </tbody>
+        <% } else {
+            for (int i = 0; i < taches.size(); i++) {
+                Task t = taches.get(i);
+        %>
+        <tr>
+            <td><%= t.getTitre() %></td>
+            <td><%= t.getDescription() %></td>
+            <td><%= t.getDate() %></td>
+            <td><%= t.isTerminee() ? "Terminée ✅" : "En cours ⏳" %></td>
+            <td>
+                <% if (!t.isTerminee()) { %>
+                    <a href="?action=terminer&index=<%=i%>">Terminer</a>
+                <% } %>
+                <a href="?action=supprimer&index=<%=i%>">Supprimer</a>
+            </td>
+        </tr>
+        <% } } %>
     </table>
 
 </body>
 </html>
+

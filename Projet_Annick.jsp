@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
-    // ===== Classe simple pour représenter une tâche =====
+    //  Classe simple pour représenter une tâche
     class Task {
         private String titre;
         private String description;
@@ -23,17 +23,17 @@
         public void setTerminee(boolean t) { terminee = t; }
     }
 
-    // ===== Liste des tâches stockée dans la session =====
+    //  Liste des tâches stockée dans la session 
     ArrayList<Task> taches = (ArrayList<Task>) session.getAttribute("taches");
     if (taches == null) {
         taches = new ArrayList<>();
         session.setAttribute("taches", taches);
     }
 
-    // ===== Récupération de l'action =====
+    //  Récupération de l'action 
     String action = request.getParameter("action");
 
-    // ===== Ajouter une tâche =====
+    //  Ajouter une tâche 
     if ("ajouter".equals(action)) {
         String titre = request.getParameter("titre");
         String desc = request.getParameter("description");
@@ -43,7 +43,7 @@
         }
     }
 
-    // ===== Supprimer une tâche =====
+    // Supprimer une tâche 
     if ("supprimer".equals(action)) {
         int index = Integer.parseInt(request.getParameter("index"));
         if (index >= 0 && index < taches.size()) {
@@ -51,7 +51,7 @@
         }
     }
 
-    // ===== Marquer une tâche comme terminée =====
+    //  Marquer une tâche comme terminée 
     if ("terminer".equals(action)) {
         int index = Integer.parseInt(request.getParameter("index"));
         if (index >= 0 && index < taches.size()) {
@@ -59,7 +59,7 @@
         }
     }
 
-    // ===== Réinitialiser toutes les tâches =====
+    //  Réinitialiser toutes les tâches 
     if ("reset".equals(action)) {
         taches.clear();
     }

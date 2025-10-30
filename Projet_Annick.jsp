@@ -1,148 +1,193 @@
-<%@page contentType="text/html" pageEncoding="UTF_8"%>
-<%@page import="java.util.ArrayList, java.util.Iterator, java.io.Serializable"%>
+<%-- ====================================================================== --%>
+<%-- PAGE JSP UNIQUE : Projet_Annick.jsp --%>
+<%-- ====================================================================== --%>
+
+<%-- Imports : On dit à JSP quels "outils" Java on veut utiliser --%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.ArrayList"%> <%-- Outil pour créer notre "liste" de tâches --%>
+<%@page import="java.util.Iterator"%> <%-- Outil nécessaire pour SUPPRIMER un élément d'une liste --%>
+<%@page import="java.io.Serializable"%> <%-- Une "bonne pratique" pour les objets qu'on met en session --%>
+
+
+<%-- ====================================================================== --%>
+<%-- SECTION 1 : DÉFINITION DE LA CLASSE TÂCHE (Le "Modèle") --%>
+<%-- ====================================================================== --%>
 <%!
-// Déclaration de la classe 'Task' //
-public class Task implements Serializable {
+    /**
+     * Crée une classe Java représentant une tâche (Task) 
+     * avec des attributs privés.
+     * La balise <%! ... %> (avec un "!") permet de déclarer des classes.
+     */
+    public class Task implements Serializable {
 
-     private String titre;
-     private String description;
-     private String dateEchéance;
-     private boolean terminee;
-     private long id; 
-
-// Constructeur 
-public Task(String titre, String description, String dateEchéance) {
-  this.titre = titre; 
-  this.description = description; 
-  this.dateEcheance = dateEcheance; 
-  this.terminee = false; 
-  this.id = system.currentTimeMillis(); 
-}
- 
-public String getTitre(){ return titre;} 
-public String getDescription(){ return Description;}
-public String getDateEcheance(){ return dateEcheance;}
-public String isTerminee(){ return terminee;}
-public String getId(){ return id;}
-
-
-public void setTerminee(boolean terminee) {
-   this.terminee = terminee;
-}
-
-}
-
-%> 
-
-  if (listeTaches == null) {
-        listeTaches = new ArrayList<Task>();
-        session.setAttribute("listeTaches", listeTaches);
-  }
-
-  if (action != null) {
+        // --- Attributs Privés ---
+        private String titre;
+        private String description;
+        private String dateEcheance;
+        private boolean terminee;
         
-      switch (action) {
-      case "ajouter" : 
-            String titre = request.getParameter("titre");
-                String desc = request.getParameter("description");
-                String date = request.getParameter("dateEcheance");
-                
-                if (titre != null && !titre.isEmpty()) {
-                    listeTaches.add(new Task(titre, desc, date));
-                    // On ne sauvegarde pas la liste en session ici, 
-                    // car 'listeTaches' est une référence à l'objet déjà en session.
-                }
-                
-                // Implémentation du pattern PRG (Post-Redirect-Get)
-                // Essentiel pour éviter la re-soumission du formulaire (F5)
-                response.sendRedirect("gestionTaches.jsp");
-                return; // Arrête l'exécution de la page après la redirection
+        // On ajoute un ID unique pour savoir quelle tâche supprimer ou modifier
+        private long id; 
 
-            /**
-             * ACTION : SUPPRIMER
-             * [cite_start]Gère la fonctionnalité "Suppression d'une tâche"[cite: 20].
-             */
-            case "supprimer":
-                long idSuppr = Long.parseLong(request.getParameter("id"));
-                
-                // Utilisation d'un Iterator : obligatoire pour supprimer
-                // un élément d'une collection pendant un parcours.
-                Iterator<Task> iterator = listeTaches.iterator();
-                while (iterator.hasNext()) {
-                    if (iterator.next().getId() == idSuppr) {
-                        iterator.remove();
-                        message = "Tâche supprimée.";
-                        break;
-                    }
-                }
-                break;
+        /**
+         * C'est le "constructeur". Il est appelé quand on fait "new Task(...)".
+         */
+        public Task(String titre, String description, String dateEcheance) {
+            this.titre = titre;
+            this.description = description;
+            this.dateEcheance = dateEcheance;
+            this.terminee = false; // Par défaut, une tâche n'est pas terminée
+            // On crée un ID simple basé sur l'heure (pour s'assurer qu'il est unique)
+            this.id = System.currentTimeMillis();
+        }
 
-            /**
-             * ACTION : TERMINER
-             * [cite_start]Gère la fonctionnalité "Tâche terminée"[cite: 20].
-             */
-            case "terminer":
-                long idTerm = Long.parseLong(request.getParameter("id"));
-                for (Task tache : listeTaches) {
-                    if (tache.getId() == idTerm) {
-                        tache.setTerminee(true);
-                        message = "Tâche marquée comme terminée.";
-                        break;
-                    }
-                }
-                break;
+        // --- Les "Getters" (Accesseurs) ---
+        // Méthodes publiques pour LIRE les attributs privés.
+        public String getTitre() { return this.titre; }
+        public String getDescription() { return this.description; }
+        public String getDateEcheance() { return this.dateEcheance; }
+        public boolean isTerminee() { return this.terminee; }
+        public long getId() { return this.id; }
+
+        // --- Le "Setter" (Mutateur) ---
+        // Méthode publique pour MODIFIER un attribut privé
+        public void setTerminee(boolean status) {
+            this.terminee = status;
         }
     }
-    
-    // Les données (listeTaches) sont maintenant prêtes pour la Vue.
 %>
 
 
+<%-- ====================================================================== --%>
+<%-- SECTION 2 : LOGIQUE DE LA PAGE (Le "Contrôleur") --%>
+<%-- ====================================================================== --%>
+<%
+    /**
+     * Ce bloc de code (<% ... %> SANS "!") s'exécute A CHAQUE FOIS
+     * que la page est chargée ou rechargée.
+     */
+
+    // 1. GESTION DE LA SESSION
+    // Les tâches sont enregistrées dans une liste (ArrayList) stockée en session.
+    
+    // On essaie de récupérer la liste de tâches de la mémoire de l'utilisateur.
+    ArrayList<Task> maListeDeTaches = (ArrayList<Task>) session.getAttribute("listeTaches");
+
+    // Si c'est la première visite (liste = null)
+    if (maListeDeTaches == null) {
+        // On crée une nouvelle liste vide
+        maListeDeTaches = new ArrayList<Task>();
+        // Et on la sauvegarde dans la session pour les prochaines visites
+        session.setAttribute("listeTaches", maListeDeTaches);
+    }
+
+    // 2. GESTION DES ACTIONS (Que veut faire l'utilisateur ?)
+    
+    // On regarde si l'utilisateur a cliqué sur un bouton ou un lien
+    String action = request.getParameter("action");
+    String messageUtilisateur = ""; // Pour afficher un message de succès
+
+    if (action != null) {
+
+        // CAS 1: L'utilisateur a rempli le formulaire d'ajout
+        if (action.equals("ajouter")) {
+            String titreForm = request.getParameter("titre");
+            String descForm = request.getParameter("description");
+            String dateForm = request.getParameter("dateEcheance");
+            
+            Task nouvelleTache = new Task(titreForm, descForm, dateForm);
+            maListeDeTaches.add(nouvelleTache);
+            messageUtilisateur = "Tâche '" + titreForm + "' ajoutée !";
+        }
+
+        // CAS 2: L'utilisateur a cliqué sur le lien "Supprimer"
+        else if (action.equals("supprimer")) {
+            long idTacheASupprimer = Long.parseLong(request.getParameter("id"));
+            
+            // On utilise un "Iterator" : c'est la seule façon sûre
+            // de supprimer un élément d'une liste PENDANT qu'on la parcourt.
+            Iterator<Task> iter = maListeDeTaches.iterator();
+            while (iter.hasNext()) {
+                Task tache = iter.next();
+                if (tache.getId() == idTacheASupprimer) {
+                    iter.remove();
+                    messageUtilisateur = "Tâche supprimée.";
+                    break; 
+                }
+            }
+        }
+
+        // CAS 3: L'utilisateur a cliqué sur le lien "Terminer"
+        else if (action.equals("terminer")) {
+            long idTacheATerminer = Long.parseLong(request.getParameter("id"));
+            
+            for (Task tache : maListeDeTaches) { 
+                if (tache.getId() == idTacheATerminer) {
+                    tache.setTerminee(true); 
+                    messageUtilisateur = "Tâche marquée comme terminée.";
+                    break; 
+                }
+            }
+        }
+    }
+%>
+
+
+<%-- ====================================================================== --%>
+<%-- SECTION 3 : L'"Affichage" (Code HTML que voit l'utilisateur) --%>
+<%-- ====================================================================== --%>
 <html>
 <head>
-    <title>Gestionnaire de Tâches</title>
+    <title>Gestionnaire de Tâches (Projet Annick)</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        th, td { border: 1px solid #ddd; padding: 10px; }
-        th { background-color: #f2f2f2; }
-        form { background: #f9f9f9; padding: 15px; border-radius: 5px; }
-        .message { color: green; }
-        .task-done { text-decoration: line-through; color: #888; }
-        .actions a { margin-right: 10px; }
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        h1, h2 { color: #444; }
+        form { background: #f4f4f4; padding: 20px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        .message { color: green; font-weight: bold; }
+        .task-done { text-decoration: line-through; color: #999; }
     </style>
 </head>
 <body>
 
-    <h1>Gestionnaire de Tâches</h1>
+    <h1>Mon Gestionnaire de Tâches</h1>
 
-    <%-- Affichage du feedback (si défini par le contrôleur) --%>
-    <% if (!message.isEmpty()) { %>
-        <p class="message"><%= message %></p>
+    <%-- On affiche le message de succès (s'il n'est pas vide) --%>
+    <% if (!messageUtilisateur.isEmpty()) { %>
+        <p class="message"><%= messageUtilisateur %></p>
     <% } %>
 
     <hr>
+
+    <h2>Ajouter une nouvelle tâche</h2>
     
-    <h2>Ajouter une tâche</h2>
-    <form action="gestionTaches.jsp" method="POST">
+    <form action="Projet_Annick.jsp" method="POST">
+        
         <input type="hidden" name="action" value="ajouter">
         
         <div>
-            Titre: <input type="text" name="titre" required>
+            Titre: <br>
+            <input type="text" name="titre" required>
         </div>
         <div>
-            Description: <textarea name="description"></textarea>
+            Description: <br>
+            <textarea name="description"></textarea>
         </div>
         <div>
-            Date d'échéance: <input type="date" name="dateEcheance">
+            Date d'échéance: <br>
+            <input type="date" name="dateEcheance">
         </div>
-        <input type="submit" value="Ajouter">
+        <div>
+            <input type="submit" value="Ajouter la tâche">
+        </div>
     </form>
 
     <hr>
 
-    <h2>Liste des tâches</h2>
-    
+    <h2>Liste de mes tâches</h2>
+
     <table>
         <thead>
             <tr>
@@ -155,28 +200,44 @@ public void setTerminee(boolean terminee) {
         </thead>
         <tbody>
             
-            [cite_start]<%-- Exigence : L'affichage des tâches utilise une boucle dans une page JSP [cite: 16] --%>
-            <% if (listeTaches.isEmpty()) { %>
+            <%-- On vérifie d'abord si la liste est vide --%>
+            <% if (maListeDeTaches.isEmpty()) { %>
                 <tr>
-                    <td colspan="5">Aucune tâche n'est actuellement enregistrée.</td>
+                    <td colspan="5">Aucune tâche pour le moment.</td>
                 </tr>
             <% } else { %>
-                <%-- Boucle 'for-each' sur la liste préparée par le contrôleur --%>
-                <% for (Task tache : listeTaches) { %>
-                    <tr class="<%= tache.isTerminee() ? "task-done" : "" %>">
+            
+                <%-- Boucle "for" pour parcourir 'maListeDeTaches' --%>
+                <% for (Task tache : maListeDeTaches) { %>
+                
+                    <tr <% if (tache.isTerminee()) { out.print("class='task-done'"); } %>>
                         
-                        <%-- Utilisation des getters du Modèle --%>
+                        <%-- On utilise <%= ... %> pour AFFICHER les infos --%>
                         <td><%= tache.getTitre() %></td>
                         <td><%= tache.getDescription() %></td>
                         <td><%= tache.getDateEcheance() %></td>
-                        <td><%= tache.isTerminee() ? "Terminée" : "En cours" %></td>
-                        
-                        <td class="actions">
+                        <td>
+                            <%= tache.isTerminee() ? "Terminée" : "En cours" %>
+                        </td>
+                        <td>
+                            <%-- Le lien "Terminer" s'affiche seulement si la tâche est "En cours" --%>
                             <% if (!tache.isTerminee()) { %>
-                                <a href="gestionTaches.jsp?action=terminer&id=<%= tache.getId() %>">Terminer</a>
+                                <a href="Projet_Annick.jsp?action=terminer&id=<%= tache.getId() %>">
+                                    Terminer
+                                </a>
                             <% } %>
-                            <a href="gestionTaches.jsp?action=supprimer&id=<%= tache.getId() %>" onclick="return confirm('Confirmer la suppression ?');">Supprimer</a>
+                            
+                            <a href="Projet_Annick.jsp?action=supprimer&id=<%= tache.getId() %>">
+                                Supprimer
+                            </a>
                         </td>
                     </tr>
-                <% } // Fin de la boucle %>
-            <% } // Fin du else %>
+                
+                <% } // Fin de la boucle "for" %>
+            <% } // Fin du "else" %>
+            
+        </tbody>
+    </table>
+
+</body>
+</html>

@@ -9,14 +9,10 @@
 <%@page import="java.io.Serializable"%> <%-- Une "bonne pratique" pour les objets qu'on met en session --%>
 
 
-<%-- ====================================================================== --%>
-<%-- SECTION 1 : DÉFINITION DE LA CLASSE TÂCHE (Le "Modèle") --%>
-<%-- ====================================================================== --%>
-<%!
+
     /**
      * Crée une classe Java représentant une tâche (Task) 
-     * avec des attributs privés.
-     * La balise <%! ... %> (avec un "!") permet de déclarer des classes.
+    
      */
     public class Task implements Serializable {
 
@@ -29,9 +25,7 @@
         // On ajoute un ID unique pour savoir quelle tâche supprimer ou modifier
         private long id; 
 
-        /**
-         * C'est le "constructeur". Il est appelé quand on fait "new Task(...)".
-         */
+        
         public Task(String titre, String description, String dateEcheance) {
             this.titre = titre;
             this.description = description;
@@ -41,16 +35,14 @@
             this.id = System.currentTimeMillis();
         }
 
-        // --- Les "Getters" (Accesseurs) ---
-        // Méthodes publiques pour LIRE les attributs privés.
+        
         public String getTitre() { return this.titre; }
         public String getDescription() { return this.description; }
         public String getDateEcheance() { return this.dateEcheance; }
         public boolean isTerminee() { return this.terminee; }
         public long getId() { return this.id; }
 
-        // --- Le "Setter" (Mutateur) ---
-        // Méthode publique pour MODIFIER un attribut privé
+       
         public void setTerminee(boolean status) {
             this.terminee = status;
         }
@@ -59,7 +51,7 @@
 
 
 <%-- ====================================================================== --%>
-<%-- SECTION 2 : LOGIQUE DE LA PAGE (Le "Contrôleur") --%>
+<%-- SECTION 2 : LOGIQUE DE LA PAGE  --%>
 <%-- ====================================================================== --%>
 <%
     /**

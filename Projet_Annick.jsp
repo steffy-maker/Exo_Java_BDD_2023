@@ -10,10 +10,7 @@
 
 
 
-    /**
-     * Crée une classe Java représentant une tâche (Task) 
     
-     */
     public class Task implements Serializable {
 
         // --- Attributs Privés ---
@@ -22,17 +19,14 @@
         private String dateEcheance;
         private boolean terminee;
         
-        // On ajoute un ID unique pour savoir quelle tâche supprimer ou modifier
-        private long id; 
+       
 
         
         public Task(String titre, String description, String dateEcheance) {
             this.titre = titre;
             this.description = description;
             this.dateEcheance = dateEcheance;
-            this.terminee = false; // Par défaut, une tâche n'est pas terminée
-            // On crée un ID simple basé sur l'heure (pour s'assurer qu'il est unique)
-            this.id = System.currentTimeMillis();
+            this.terminee = false; 
         }
 
         
@@ -54,34 +48,22 @@
 <%-- SECTION 2 : LOGIQUE DE LA PAGE  --%>
 <%-- ====================================================================== --%>
 <%
-    /**
-     * Ce bloc de code (<% ... %> SANS "!") s'exécute A CHAQUE FOIS
-     * que la page est chargée ou rechargée.
-     */
-
-    // 1. GESTION DE LA SESSION
-    // Les tâches sont enregistrées dans une liste (ArrayList) stockée en session.
-    
-    // On essaie de récupérer la liste de tâches de la mémoire de l'utilisateur.
-    ArrayList<Task> maListeDeTaches = (ArrayList<Task>) session.getAttribute("listeTaches");
-
-    // Si c'est la première visite (liste = null)
+   
     if (maListeDeTaches == null) {
-        // On crée une nouvelle liste vide
+        
         maListeDeTaches = new ArrayList<Task>();
-        // Et on la sauvegarde dans la session pour les prochaines visites
+        
         session.setAttribute("listeTaches", maListeDeTaches);
     }
 
-    // 2. GESTION DES ACTIONS (Que veut faire l'utilisateur ?)
     
-    // On regarde si l'utilisateur a cliqué sur un bouton ou un lien
+    
     String action = request.getParameter("action");
     String messageUtilisateur = ""; // Pour afficher un message de succès
 
     if (action != null) {
 
-        // CAS 1: L'utilisateur a rempli le formulaire d'ajout
+        
         if (action.equals("ajouter")) {
             String titreForm = request.getParameter("titre");
             String descForm = request.getParameter("description");
